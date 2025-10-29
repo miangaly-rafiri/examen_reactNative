@@ -1,0 +1,20 @@
+export interface Book {
+    id: string;
+    name: string;
+    author: string;
+    editor: string;
+    read: boolean;
+    favorite: boolean;
+    theme?: string;
+    year: number;
+    rating?: number;
+}
+
+export interface BookFormData {
+    name: string;
+    author: string;
+    editor: string;
+    theme?: string;
+    year: number;
+    rating?: number;
+}
