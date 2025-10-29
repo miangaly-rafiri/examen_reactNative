@@ -96,11 +96,11 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FF6B6B', // Rouge vif
-        backgroundImage: 'linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEEAD)', // Dégradé arc-en-ciel pastel
+        backgroundColor: '#FF6B6B',
+        backgroundImage: 'linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEEAD)', 
     },
     header: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)', // Fond semi-transparent
+        backgroundColor: 'rgba(255, 255, 255, 0.2)', 
         padding: 20,
         paddingTop: 40,
         borderBottomLeftRadius: 20,
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 3,
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.2)', // Bordure légère
+        borderColor: 'rgba(255, 255, 255, 0.2)', 
     },
     bookContent: {
         padding: 16,
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     bookCover: {
         width: 80,
         height: 120,
-        backgroundColor: 'rgba(255, 255, 255, 0.5)', // Fond plus lumineux
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
@@ -210,10 +210,10 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
     readBadge: {
-        backgroundColor: '#96CEB4', // Vert pastel
+        backgroundColor: '#96CEB4', 
     },
     unreadBadge: {
-        backgroundColor: '#FF9999', // Rouge pastel
+        backgroundColor: '#FF9999',
     },
     badgeText: {
         color: 'white',
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#45B7D1', // Bleu pastel
+        backgroundColor: '#45B7D1', 
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#000',
