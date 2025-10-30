@@ -19,4 +19,5 @@ export interface BookFormData {
     favorite?: boolean;
     year: number;
     rating?: number;
+    cover?: string; 
 }

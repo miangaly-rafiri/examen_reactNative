@@ -16,44 +16,104 @@ export default function HomeScreen() {
         refreshBooks();
     }, []);
 
-    const renderItem = ({ item: book }: { item: Book }) => (
-        <TouchableOpacity
-            style={styles.bookItem}
-            onPress={() => router.push(`/book/${book.id}`)}
-        >
-            <ThemedView style={styles.bookContent}>
-                <ThemedView style={styles.bookRow}>
-                    <ThemedView style={styles.bookTextContent}>
-                        <ThemedView style={styles.bookHeader}>
-                            <ThemedText type="subtitle" style={styles.bookTitle}>
-                                {book.name}
-                            </ThemedText>
+const handleToggleFavorite = async (bookId: string, favorite: boolean) => {
+    try {
+        await api.toggleFavoriteStatus(bookId, favorite);
+        await refreshBooks(); // Recharge la liste pour voir le changement
+    } catch (error) {
+        console.error('Erreur lors de la modification du favori:', error);
+    }
+};
+    // const renderItem = ({ item: book }: { item: Book }) => (
+    //     <TouchableOpacity
+    //         style={styles.bookItem}
+    //         onPress={() => router.push(`/book/${book.id}`)}
+    //     >
+    //         <ThemedView style={styles.bookContent}>
+    //             <ThemedView style={styles.bookRow}>
+    //                 <ThemedView style={styles.bookTextContent}>
+    //                     <ThemedView style={styles.bookHeader}>
+    //                         <ThemedText type="subtitle" style={styles.bookTitle}>
+    //                             {book.name}
+    //                         </ThemedText>
+    //                         <ThemedView style={[styles.badge, book.read ? styles.readBadge : styles.unreadBadge]}>
+    //                             <ThemedText style={styles.badgeText}>
+    //                                 {book.read ? 'Lu' : 'Non lu'}
+    //                             </ThemedText>
+    //                         </ThemedView>
+    //                     </ThemedView>
+                        
+    //                     <ThemedText style={styles.bookAuthor}>
+    //                         par {book.author}
+    //                     </ThemedText>
+                        
+    //                     {book.theme && (
+    //                         <ThemedText style={styles.bookTheme}>
+    //                             Thème : {book.theme}
+    //                         </ThemedText>
+    //                     )}
+    //                 </ThemedView>
+
+    //                 <ThemedView style={styles.bookCover}>
+    //                     <ThemedText style={styles.bookEmoji}>📚</ThemedText>
+    //                 </ThemedView>
+    //             </ThemedView>
+    //         </ThemedView>
+    //     </TouchableOpacity>
+    // );
+const renderItem = ({ item: book }: { item: Book }) => (
+    <TouchableOpacity
+        style={styles.bookItem}
+        onPress={() => router.push(`/book/${book.id}`)}
+    >
+        <ThemedView style={styles.bookContent}>
+            <ThemedView style={styles.bookRow}>
+                <ThemedView style={styles.bookTextContent}>
+                    <ThemedView style={styles.bookHeader}>
+                        <ThemedText type="subtitle" style={styles.bookTitle}>
+                            {book.name}
+                        </ThemedText>
+                        <ThemedView style={styles.headerBadges}>
+                            <TouchableOpacity 
+                                style={styles.favoriteButton}
+                                onPress={(e) => {
+                                    e.stopPropagation(); // Empêche la navigation
+                                    handleToggleFavorite(book.id, !book.favorite);
+                                }}
+                            >
+                                <ThemedText style={[
+                                    styles.favoriteIcon,
+                                    book.favorite && styles.favoriteIconActive
+                                ]}>
+                                    {book.favorite ? '❤️' : '🤍'}
+                                </ThemedText>
+                            </TouchableOpacity>
                             <ThemedView style={[styles.badge, book.read ? styles.readBadge : styles.unreadBadge]}>
                                 <ThemedText style={styles.badgeText}>
                                     {book.read ? 'Lu' : 'Non lu'}
                                 </ThemedText>
                             </ThemedView>
                         </ThemedView>
-                        
-                        <ThemedText style={styles.bookAuthor}>
-                            par {book.author}
+                    </ThemedView>
+                    
+                    <ThemedText style={styles.bookAuthor}>
+                        par {book.author}
+                    </ThemedText>
+                    
+                    {book.theme && (
+                        <ThemedText style={styles.bookTheme}>
+                            Thème : {book.theme}
                         </ThemedText>
-                        
-                        {book.theme && (
-                            <ThemedText style={styles.bookTheme}>
-                                Thème : {book.theme}
-                            </ThemedText>
-                        )}
-                    </ThemedView>
+                    )}
+                </ThemedView>
 
-                    <ThemedView style={styles.bookCover}>
-                        <ThemedText style={styles.bookEmoji}>📚</ThemedText>
-                    </ThemedView>
+                <ThemedView style={styles.bookCover}>
+                    <ThemedText style={styles.bookEmoji}>📚</ThemedText>
                 </ThemedView>
             </ThemedView>
-        </TouchableOpacity>
-    );
-
+        </ThemedView>
+    </TouchableOpacity>
+);
     if (loading) {
         return (
             <ThemedView style={styles.centered}>
@@ -245,5 +305,21 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 24,
         fontWeight: 'bold',
+    },
+
+     // Nouveaux styles pour les favoris
+    headerBadges: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    favoriteButton: {
+        padding: 4,
+    },
+    favoriteIcon: {
+        fontSize: 20,
+    },
+    favoriteIconActive: {
+        fontSize: 20,
     },
 });

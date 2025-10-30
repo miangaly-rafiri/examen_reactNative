@@ -1,6 +1,11 @@
 import { Book, BookFormData } from '../types/book';
 
-const API_URL = 'http://localhost:3000';
+// const API_URL = 'http://localhost:3000';
+// const API_URL = 'http://10.105.1.242:3000';
+const API_URL = 'http://192.168.1.69:3000';
+
+
+
 
 export const api = {
     // Récupérer 
@@ -50,7 +55,31 @@ export const api = {
         });
         if (!response.ok) throw new Error('Erreur lors de la suppression du livre');
     },
+// Ajouter une note à un livre
+async addBookNote(bookId: string, content: string): Promise<any> {
+  const response = await fetch(`${API_URL}/books/${bookId}/notes`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ content }),
+  });
+  if (!response.ok) throw new Error('Erreur lors de l\'ajout de la note');
+  return response.json();
+},
 
+// Mettre à jour les favoris
+async toggleFavoriteStatus(id: string, favorite: boolean): Promise<Book> {
+  return this.updateBook(id, { favorite });
+},
+
+
+// Récupérer les notes d'un livre
+async getBookNotes(bookId: string): Promise<any[]> {
+  const response = await fetch(`${API_URL}/books/${bookId}/notes`);
+  if (!response.ok) throw new Error('Erreur lors de la récupération des notes');
+  return response.json();
+},
     // Mettre à jour le statut
     async toggleReadStatus(id: string, read: boolean): Promise<Book> {
         return this.updateBook(id, { read });

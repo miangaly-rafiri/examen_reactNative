@@ -185,7 +185,7 @@
 // });
 
 
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { api } from '../../services/api';
 import { Book } from '../../types/book';
@@ -198,10 +198,13 @@ export default function BookDetails() {
     const router = useRouter();
     const [book, setBook] = useState<Book | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [newNote, setNewNote] = useState('');
+    const [notes, setNotes] = useState<any[]>([]);
 
     useFocusEffect(
         useCallback(() => {
             loadBook();
+            loadNotes();
         }, [id])
     );
 
@@ -215,6 +218,28 @@ export default function BookDetails() {
             }
         }
     };
+const loadNotes = async () => {
+  if (typeof id === 'string') {
+    try {
+      const notesData = await api.getBookNotes(id);
+      setNotes(notesData);
+    } catch (error) {
+      console.error('Erreur lors du chargement des notes:', error);
+    }
+  }
+};
+
+const handleAddNote = async () => {
+  if (!newNote.trim() || !book) return;
+
+  try {
+    await api.addBookNote(book.id, newNote);
+    setNewNote('');
+    await loadNotes(); // Recharger les notes
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout de la note:', error);
+  }
+};
 
     const { refreshBooks } = useBooks();
 
@@ -312,6 +337,8 @@ export default function BookDetails() {
 </Text>
                     </TouchableOpacity>
 
+            
+
 
                     <TouchableOpacity 
                         style={[styles.button, styles.editButton]}
@@ -327,6 +354,43 @@ export default function BookDetails() {
                         <Text style={styles.buttonText}>Supprimer</Text>
                     </TouchableOpacity>
                 </View>
+
+<View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Notes</Text>
+                  
+                  {notes.length === 0 ? (
+                    <Text style={styles.emptyText}>Aucune note pour ce livre</Text>
+                  ) : (
+                    notes.map((note) => (
+                      <View key={note.id} style={styles.noteCard}>
+                        <Text style={styles.noteContent}>{note.content}</Text>
+                        <Text style={styles.noteDate}>
+                          {new Date(note.dateISO).toLocaleDateString('fr-FR')}
+                        </Text>
+                      </View>
+                    ))
+                  )}
+                  
+                  {/* Formulaire d'ajout de note */}
+                  <View style={styles.addNoteContainer}>
+                    <TextInput
+                      style={styles.noteInput}
+                      placeholder="Ajouter une note..."
+                      placeholderTextColor="rgba(255,255,255,0.6)"
+                      value={newNote}
+                      onChangeText={setNewNote}
+                      multiline
+                    />
+                    <TouchableOpacity 
+                      style={[styles.button, styles.addNoteButton, !newNote.trim() && styles.buttonDisabled]}
+                      onPress={handleAddNote}
+                      disabled={!newNote.trim()}
+                    >
+                      <Text style={styles.buttonText}>Ajouter la note</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                
             </ScrollView>
 
             {/* Modal de confirmation de suppression */}
@@ -358,6 +422,9 @@ export default function BookDetails() {
                         </View>
                     </View>
                 </View>
+
+
+                
             </Modal>
         </RainbowBackground>
     );
@@ -479,5 +546,59 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         color: 'white',
+    },
+
+    // Ajouter les styles des notes 
+    section: {
+        backgroundColor: 'rgba(255, 255, 255, 0.12)',
+        padding: 16,
+        borderRadius: 8,
+        marginTop: 24,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: 'white',
+        marginBottom: 12,
+    },
+    noteCard: {
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        padding: 12,
+        borderRadius: 6,
+        marginBottom: 8,
+    },
+    noteContent: {
+        color: 'white',
+        fontSize: 14,
+        marginBottom: 4,
+    },
+    noteDate: {
+        color: 'rgba(255, 255, 255, 0.7)',
+        fontSize: 12,
+    },
+    addNoteContainer: {
+        marginTop: 16,
+    },
+    noteInput: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        padding: 12,
+        borderRadius: 6,
+        minHeight: 80,
+        textAlignVertical: 'top',
+        marginBottom: 12,
+        fontSize: 16,
+    },
+    addNoteButton: {
+        backgroundColor: '#2196F3',
+    },
+    buttonDisabled: {
+        backgroundColor: '#CCCCCC',
+        opacity: 0.6,
+    },
+    emptyText: {
+        color: 'rgba(255, 255, 255, 0.7)',
+        fontStyle: 'italic',
+        textAlign: 'center',
+        padding: 16,
     },
 });
