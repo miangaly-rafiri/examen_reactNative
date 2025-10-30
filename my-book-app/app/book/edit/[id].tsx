@@ -1,4 +1,4 @@
-import { TextInput, StyleSheet, TouchableOpacity, Text, ScrollView } from 'react-native';
+import { TextInput, StyleSheet, TouchableOpacity, Text, ScrollView, Switch} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { api } from '../../../services/api';
 import { BookFormData } from '../../../types/book';
@@ -15,6 +15,8 @@ export default function EditBook() {
         author: '',
         editor: '',
         theme: '',
+        read: false,
+        favorite: false,
         year: 0,
         rating: undefined
     });
@@ -33,6 +35,8 @@ export default function EditBook() {
                 author: book.author,
                 editor: book.editor || '',
                 theme: book.theme || '',
+                read: book.read || false,
+                favorite: book.favorite || false,
                 year: book.year || 0,
                 rating: book.rating
             });
@@ -92,7 +96,17 @@ export default function EditBook() {
                 onChangeText={(text) => setFormData(prev => ({ ...prev, theme: text }))}
                 placeholder="Thème du livre"
             />
+<Text style={styles.label}>Lu</Text>
+<Switch
+  value={formData.read}
+  onValueChange={(value) => setFormData(prev => ({ ...prev, read: value }))}
+/>
 
+<Text style={styles.label}>Favori</Text>
+<Switch
+  value={formData.favorite}
+  onValueChange={(value) => setFormData(prev => ({ ...prev, favorite: value }))}
+/>
             <Text style={styles.label}>Année *</Text>
             <TextInput
                 style={styles.input}

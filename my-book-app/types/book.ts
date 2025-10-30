@@ -15,6 +15,8 @@ export interface BookFormData {
     author: string;
     editor: string;
     theme?: string;
+    read?: boolean;
+    favorite?: boolean;
     year: number;
     rating?: number;
 }

@@ -12,7 +12,7 @@ export default function NewBook() {
         author: '',
         editor: '',
         theme: '',
-        year: 0,  // Valeur par défaut requise
+        year: 0, 
         rating: undefined
     });
     const [error, setError] = useState<string | null>(null);
@@ -22,7 +22,6 @@ export default function NewBook() {
     const handleSubmit = async () => {
         try {
             setError(null);
-            // Vérification des champs requis
             if (!formData.name || !formData.author || !formData.editor || !formData.year) {
                 setError("Tous les champs marqués d'un * sont requis");
                 return;
