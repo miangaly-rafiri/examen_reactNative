@@ -5,6 +5,7 @@ import { BookFormData } from '../../../types/book';
 import { useState, useEffect } from 'react';
 import { useBooks } from '../../../contexts/BooksContext';
 import { RainbowBackground } from '@/components/rainbow-background';
+import { StarRating } from '@/components/star-rating';
 
 
 export default function EditBook() {
@@ -120,16 +121,12 @@ export default function EditBook() {
             />
 
             <Text style={styles.label}>Note</Text>
-            <TextInput
-                style={styles.input}
-                value={formData.rating?.toString() || ''}
-                onChangeText={(text) => {
-                    const rating = text ? parseInt(text, 10) : undefined;
-                    setFormData(prev => ({ ...prev, rating: rating && rating <= 5 ? rating : undefined }));
-                }}
-                placeholder="Note sur 5"
-                keyboardType="numeric"
-            />
+            <StarRating
+  rating={formData.rating || 0}
+  onRatingChange={(rating) => setFormData(prev => ({ ...prev, rating }))}
+  editable={true}
+  size={32}
+/>
 
             <TouchableOpacity 
                 style={styles.button}
@@ -147,11 +144,11 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
-    label: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 8,
-    },
+    // label: {
+    //     fontSize: 16,
+    //     fontWeight: '600',
+    //     marginBottom: 8,
+    // },
     input: {
         backgroundColor: 'white',
         padding: 12,
@@ -170,5 +167,11 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         fontWeight: '600',
+    },
+       label: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 8,
+        color: 'white',
     },
 });

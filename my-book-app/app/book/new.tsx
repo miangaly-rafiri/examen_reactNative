@@ -1,4 +1,4 @@
-import { View, TextInput, StyleSheet, TouchableOpacity, Text, ScrollView } from 'react-native';
+import { TextInput, StyleSheet, TouchableOpacity, Text, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { api } from '../../services/api';
 import type { BookFormData } from '../../types/book';
@@ -28,10 +28,12 @@ export default function NewBook() {
             }
             await api.createBook(formData);
             await refreshBooks();
+             Alert.alert('Succès', 'Livre créé avec succès !');
             router.back();
         } catch (error: any) {
             setError(error.message || "Une erreur est survenue lors de la création du livre");
             console.error('Erreur lors de la création du livre:', error);
+    Alert.alert('Erreur', 'Impossible de créer le livre');
         }
     };
 

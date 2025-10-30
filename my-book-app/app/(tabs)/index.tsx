@@ -1,66 +1,40 @@
-import { StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, View, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { api } from '../../services/api';
 import type { Book } from '../../types/book';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useBooks } from '../../contexts/BooksContext';
 import { RainbowBackground } from '../../components/rainbow-background';
+import { StarRating } from '@/components/star-rating';
 
 export default function HomeScreen() {
     const { books, loading, refreshBooks } = useBooks();
     const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
+
 
     useEffect(() => {
         refreshBooks();
     }, []);
 
+      // Fonction de filtrage simple
+const filteredBooks = books.filter(book => 
+        book.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        book.author.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
 const handleToggleFavorite = async (bookId: string, favorite: boolean) => {
     try {
         await api.toggleFavoriteStatus(bookId, favorite);
-        await refreshBooks(); // Recharge la liste pour voir le changement
+        await refreshBooks(); 
     } catch (error) {
         console.error('Erreur lors de la modification du favori:', error);
     }
 };
-    // const renderItem = ({ item: book }: { item: Book }) => (
-    //     <TouchableOpacity
-    //         style={styles.bookItem}
-    //         onPress={() => router.push(`/book/${book.id}`)}
-    //     >
-    //         <ThemedView style={styles.bookContent}>
-    //             <ThemedView style={styles.bookRow}>
-    //                 <ThemedView style={styles.bookTextContent}>
-    //                     <ThemedView style={styles.bookHeader}>
-    //                         <ThemedText type="subtitle" style={styles.bookTitle}>
-    //                             {book.name}
-    //                         </ThemedText>
-    //                         <ThemedView style={[styles.badge, book.read ? styles.readBadge : styles.unreadBadge]}>
-    //                             <ThemedText style={styles.badgeText}>
-    //                                 {book.read ? 'Lu' : 'Non lu'}
-    //                             </ThemedText>
-    //                         </ThemedView>
-    //                     </ThemedView>
-                        
-    //                     <ThemedText style={styles.bookAuthor}>
-    //                         par {book.author}
-    //                     </ThemedText>
-                        
-    //                     {book.theme && (
-    //                         <ThemedText style={styles.bookTheme}>
-    //                             Thème : {book.theme}
-    //                         </ThemedText>
-    //                     )}
-    //                 </ThemedView>
 
-    //                 <ThemedView style={styles.bookCover}>
-    //                     <ThemedText style={styles.bookEmoji}>📚</ThemedText>
-    //                 </ThemedView>
-    //             </ThemedView>
-    //         </ThemedView>
-    //     </TouchableOpacity>
-    // );
 const renderItem = ({ item: book }: { item: Book }) => (
     <TouchableOpacity
         style={styles.bookItem}
@@ -77,7 +51,7 @@ const renderItem = ({ item: book }: { item: Book }) => (
                             <TouchableOpacity 
                                 style={styles.favoriteButton}
                                 onPress={(e) => {
-                                    e.stopPropagation(); // Empêche la navigation
+                                    e.stopPropagation();
                                     handleToggleFavorite(book.id, !book.favorite);
                                 }}
                             >
@@ -105,8 +79,13 @@ const renderItem = ({ item: book }: { item: Book }) => (
                             Thème : {book.theme}
                         </ThemedText>
                     )}
+                    {book.rating && book.rating > 0 && (
+  <View style={styles.ratingContainer}>
+    <StarRating rating={book.rating} size={16} />
+    <ThemedText style={styles.ratingText}>({book.rating}/5)</ThemedText>
+  </View>
+)}
                 </ThemedView>
-
                 <ThemedView style={styles.bookCover}>
                     <ThemedText style={styles.bookEmoji}>📚</ThemedText>
                 </ThemedView>
@@ -128,9 +107,18 @@ const renderItem = ({ item: book }: { item: Book }) => (
                 <ThemedText style={styles.headerTitle}>Ma Bibliothèque</ThemedText>
                 <ThemedText style={styles.headerSubtitle}>{books.length} livre{books.length > 1 ? 's' : ''}</ThemedText>
             </ThemedView>
+                
+        <ThemedView style={styles.searchContainer}>
+            <TextInput
+                style={styles.searchInput}
+                placeholder="Rechercher un livre ou auteur..."
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+            />
+        </ThemedView>
             
             <FlatList
-                data={books}
+                data={filteredBooks}
                 renderItem={renderItem}
                 keyExtractor={(book) => book.id}
                 contentContainerStyle={styles.list}
@@ -307,7 +295,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 
-     // Nouveaux styles pour les favoris
+     // pr les favoris
     headerBadges: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -321,5 +309,32 @@ const styles = StyleSheet.create({
     },
     favoriteIconActive: {
         fontSize: 20,
+    },
+
+    // pr les ratings 
+     ratingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 4,
+        gap: 8,
+    },
+    ratingText: {
+        fontSize: 14,
+        color: '#666',
+    },
+
+    // pr la barre de recherche
+      searchContainer: {
+        padding: 16,
+        paddingTop: 8,
+        paddingBottom: 0,
+    },
+    searchInput: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        padding: 12,
+        borderRadius: 8,
+        fontSize: 16,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.3)',
     },
 });
