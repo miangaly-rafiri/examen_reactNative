@@ -1,4 +1,4 @@
-import { StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, View, TextInput } from 'react-native';
+import { StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, View, TextInput, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -20,7 +20,6 @@ export default function HomeScreen() {
         refreshBooks();
     }, []);
 
-      // Fonction de filtrage simple
 const filteredBooks = books.filter(book => 
         book.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         book.author.toLowerCase().includes(searchQuery.toLowerCase())
@@ -86,9 +85,17 @@ const renderItem = ({ item: book }: { item: Book }) => (
   </View>
 )}
                 </ThemedView>
-                <ThemedView style={styles.bookCover}>
-                    <ThemedText style={styles.bookEmoji}>📚</ThemedText>
-                </ThemedView>
+  <ThemedView style={styles.bookCover}>
+    {book.cover ? (
+        <Image 
+            source={{ uri: book.cover }} 
+            style={styles.bookCoverImage}
+             alt="textIMAGEMANQUANTE"
+        />
+    ) : (
+        <ThemedText style={styles.bookEmoji}>📚</ThemedText>
+    )}
+</ThemedView>
             </ThemedView>
         </ThemedView>
     </TouchableOpacity>
@@ -336,5 +343,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         borderWidth: 1,
         borderColor: 'rgba(255, 255, 255, 0.3)',
+    },
+
+        bookCoverImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 8,
     },
 });

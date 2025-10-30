@@ -8,6 +8,7 @@ export interface Book {
     theme?: string;
     year: number;
     rating?: number;
+    cover?: string; 
 }
 
 export interface BookFormData {

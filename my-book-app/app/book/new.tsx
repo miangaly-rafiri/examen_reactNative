@@ -2,8 +2,10 @@ import { TextInput, StyleSheet, TouchableOpacity, Text, ScrollView, Alert } from
 import { useRouter } from 'expo-router';
 import { api } from '../../services/api';
 import type { BookFormData } from '../../types/book';
+import { BookImagePicker } from '@/components/image'; 
 import { useState } from 'react';
 import { useBooks } from '../../contexts/BooksContext';
+import { RainbowBackground } from '@/components/rainbow-background';
 
 export default function NewBook() {
     const router = useRouter();
@@ -13,7 +15,8 @@ export default function NewBook() {
         editor: '',
         theme: '',
         year: 0, 
-        rating: undefined
+        rating: undefined, 
+        cover: undefined 
     });
     const [error, setError] = useState<string | null>(null);
 
@@ -38,8 +41,14 @@ export default function NewBook() {
     };
 
     return (
+         <RainbowBackground>
         <ScrollView style={styles.container}>
-            <Text style={styles.label}>Titre</Text>
+            
+            <Text style={styles.label}>Nouveau Livre</Text>
+                     <BookImagePicker
+                    currentImage={formData.cover}
+                    onImageSelected={(imageUri) => setFormData(prev => ({ ...prev, cover: imageUri }))}
+                />
             <TextInput
                 style={styles.input}
                 value={formData.name}
@@ -106,6 +115,7 @@ export default function NewBook() {
                 <Text style={styles.buttonText}>Créer</Text>
             </TouchableOpacity>
         </ScrollView>
+        </RainbowBackground>
     );
 }
 

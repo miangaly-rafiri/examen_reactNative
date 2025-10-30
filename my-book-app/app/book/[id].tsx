@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, Alert, Image } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { api } from '../../services/api';
 import { Book } from '../../types/book';
@@ -113,6 +113,17 @@ const handleAddNote = async () => {
                     <Text style={styles.headerTitle}>{book.name}</Text>
                     <Text style={styles.headerSubtitle}>par {book.author}</Text>
                 </View>
+
+                <View style={styles.coverContainer}>
+                {book.cover ? (
+                    <Image source={{ uri: book.cover }} style={styles.bookCover} />
+                ) : (
+                    <View style={styles.coverPlaceholder}>
+                        <Text style={styles.coverPlaceholderText}>📚</Text>
+                        <Text style={styles.coverPlaceholderSubtext}>Aucune couverture</Text>
+                    </View>
+                )}
+            </View>
 
                 {book.year && (
                     <Text style={styles.info}>Année : {book.year}</Text>
@@ -425,5 +436,38 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 8,
         gap: 8,
+    },
+
+    // image 
+        coverContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    bookCover: {
+        width: 200,
+        height: 300,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    coverPlaceholder: {
+        width: 200,
+        height: 300,
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        borderRadius: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: 'rgba(255, 255, 255, 0.2)',
+        borderStyle: 'dashed',
+    },
+    coverPlaceholderText: {
+        fontSize: 48,
+        marginBottom: 8,
+    },
+    coverPlaceholderSubtext: {
+        fontSize: 14,
+        color: 'rgba(255, 255, 255, 0.7)',
+        textAlign: 'center',
     },
 });
