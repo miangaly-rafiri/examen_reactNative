@@ -1,51 +1,72 @@
-# Welcome to your Expo app 👋
+#  MyBook 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Une appli React Native/Expo pour gérer une bibliothèque personnelle
 
-## Get started
+# Fonctionnalités
 
+## Gestion des livres
+- **Ajouter** un nouveau livre avec tous ses détails
+- **Modifier** les informations d'un livre existant
+- **Supprimer** des livres sur collections
+- **Marquer** comme lu/non lu et favoris
+- **Noter** les livres sur 5 étoiles
+- **Ajouter des notes** personnelles pour chaque livre
 
-1. Install dependencies
+## Recherche et filtres
+- **Recherche** en temps réel par titre ou auteur
+- **Filtrer** par statut (lu/non lu, favoris)
+- **Trier** par :
+  - Nom (A-Z, Z-A)
+  - Année (croissant, décroissant)
+  - Date d'ajout
+  - Notes
 
+## Gestion des images
+- **Ajouter une couverture** depuis la galerie
+- **Prendre une photo** avec l'appareil photo
+- **Visualiser** les couvertures en grand format
+
+## Connexion/déconnexion
+- **Mode hors ligne** : utilisation complète sans internet
+- **Synchronisation automatique** quand la connexion revient
+- **Données stockées** localement sur l'appareil
+
+## Paramètres
+- **Thème** : clair, sombre ou automatique
+- **Synchronisation** : activer/désactiver la sync auto
+- **Notifications** : préférences de notifications
+- **Statut** : voir l'état de la connexion et du stockage
+
+## Statistiques
+- **Nombre total** de livres
+- **Livres lus** vs non lus
+- **Pourcentage** de livres complétés
+- **Répartition** par année
+- **Moyenne** des notes
+
+## Installation
+
+1. **Cloner le projet**
    ```bash
-   npm install
-   ```
+   git clone [ton-repo]
+   cd my-book-app
+   lancer : npx expo start 
 
-2. Start the app
+# Pour le téléphone portable 
+Installez Expo Go sur le téléphone
+Dans VSCode, ouvrez le terminal
+``` Tapez npx expo start
+Scannez le QR code avec votre téléphone
 
-   ```bash
-   npx expo start
-   ```
+### Configuration réseau importante : 
+Dans le `server.js`, ajoutez `'0.0.0.0'` pour que le serveur accepte les connexions de votre téléphone sur le même WiFi.
 
-In the output, you'll find options to open the app in a
+# Si ça ne marche pas: 
+Trouvez l'IP de son ordinateur :
+- Ouvrez le terminal dans VSCode
+```Windows : ipconfig → cherchez "IPv4 Address" 
+```Mac : ifconfig | grep "inet " | grep -v 127.0.0.1
+- Récupérer cet adresse IP et le mettre dans le Service (front) à la place de l'url de l'API : localhost:3000
+- Remplacez localhost par l'IP de son ordinateur
+ - Redémarrez expo
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
