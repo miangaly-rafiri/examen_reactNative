@@ -22,3 +22,14 @@ export interface BookFormData {
     rating?: number;
     cover?: string; 
 }
+
+export interface BooksContextType {
+  books: Book[];
+  loading: boolean;
+  refreshBooks: () => Promise<void>;
+  createBook: (book: BookFormData) => Promise<void>;
+  updateBook: (id: string, book: Partial<Book>) => Promise<void>;
+  deleteBook: (id: string) => Promise<void>;
+  isOnline: boolean; // ← AJOUTE CETTE LIGNE
+  syncPending: boolean; // ← ET CELLE-CI SI TU L'UTILISES
+}

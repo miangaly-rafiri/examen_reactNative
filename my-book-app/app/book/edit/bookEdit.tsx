@@ -3,11 +3,10 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { api } from '../../../services/api';
 import { BookFormData } from '../../../types/book';
 import { useState, useEffect } from 'react';
-import { useBooks } from '../../../contexts/BooksContext';
+import { useBooks } from '../../contexts/BooksContext';
 import { RainbowBackground } from '@/components/rainbow-background';
 import { StarRating } from '@/components/star-rating';
 import { BookImagePicker } from '@/components/image';
-// import { imageCacheService } from '../../../services/imageCache';
 
 
 export default function EditBook() {
@@ -33,7 +32,6 @@ export default function EditBook() {
 
     const loadBook = async (bookId: string) => {
         try {
-            // const localImage = await imageCacheService.getLocalImage(bookId);
             const book = await api.getBook(bookId);
             setFormData({
                 name: book.name,
@@ -44,7 +42,6 @@ export default function EditBook() {
                 favorite: book.favorite || false,
                 year: book.year || 0,
                 rating: book.rating, 
-                //  cover: localImage || book.cover || undefined
                 cover: book.cover || undefined
 
             });
@@ -70,11 +67,6 @@ export default function EditBook() {
     return (
         <RainbowBackground>
         <ScrollView style={styles.container}>
-            <Text>
-                Modifer le livre
-            </Text>
-
-           {/* AFFICHAGE DE L'IMAGE EXISTANTE */}
                 <View style={styles.coverContainer}>
                     <Text style={styles.sectionLabel}>Image actuelle :</Text>
                     {formData.cover ? (
@@ -95,19 +87,6 @@ export default function EditBook() {
                 currentImage={formData.cover}
                 onImageSelected={(imageUri) => setFormData(prev => ({ ...prev, cover: imageUri }))}
             />
-
-                {/* AFFICHAGE DE L'URL POUR DEBUG */}
-                {formData.cover && (
-                    <View style={styles.urlContainer}>
-                        <Text style={styles.urlLabel}>URL de l'image :</Text>
-                        <Text style={styles.urlText} numberOfLines={2}>
-                            {formData.cover}
-                        </Text>
-                        <Text style={styles.urlType}>
-                            Type: {formData.cover.startsWith('http') ? 'URL distante' : 'URI locale'}
-                        </Text>
-                    </View>
-                )}
 
             <Text style={styles.label}>Titre</Text>
             <TextInput
@@ -140,17 +119,17 @@ export default function EditBook() {
                 onChangeText={(text) => setFormData(prev => ({ ...prev, theme: text }))}
                 placeholder="Thème du livre"
             />
-<Text style={styles.label}>Lu</Text>
-<Switch
-  value={formData.read}
-  onValueChange={(value) => setFormData(prev => ({ ...prev, read: value }))}
-/>
+            <Text style={styles.label}>Lu</Text>
+            <Switch
+            value={formData.read}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, read: value }))}
+            />
 
-<Text style={styles.label}>Favori</Text>
-<Switch
-  value={formData.favorite}
-  onValueChange={(value) => setFormData(prev => ({ ...prev, favorite: value }))}
-/>
+            <Text style={styles.label}>Favori</Text>
+            <Switch
+            value={formData.favorite}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, favorite: value }))}
+            />
             <Text style={styles.label}>Année *</Text>
             <TextInput
                 style={styles.input}
@@ -165,11 +144,11 @@ export default function EditBook() {
 
             <Text style={styles.label}>Note</Text>
             <StarRating
-  rating={formData.rating || 0}
-  onRatingChange={(rating) => setFormData(prev => ({ ...prev, rating }))}
-  editable={true}
-  size={32}
-/>
+            rating={formData.rating || 0}
+            onRatingChange={(rating) => setFormData(prev => ({ ...prev, rating }))}
+            editable={true}
+            size={32}
+            />
 
             <TouchableOpacity 
                 style={styles.button}
@@ -212,37 +191,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         color: 'white',
     },
-    // url de l'image
-        urlContainer: {
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 16,
-    },
-    urlLabel: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: 'white',
-        marginBottom: 4,
-    },
-    urlText: {
-        fontSize: 12,
-        color: 'rgba(255, 255, 255, 0.8)',
-        fontFamily: 'monospace',
-    },
-    urlType: {
-        fontSize: 11,
-        color: 'rgba(255, 255, 255, 0.6)',
-        marginTop: 4,
-        fontStyle: 'italic',
-    },
-    noImageText: {
-        fontSize: 14,
-        color: 'rgba(255, 255, 255, 0.6)',
-        textAlign: 'center',
-        marginBottom: 16,
-    },
-
+  
     // images 
     sectionLabel: {
         fontSize: 16,
@@ -260,10 +209,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 2,
         borderColor: 'rgba(255, 255, 255, 0.3)',
-    },
-    pickerContainer: {
-        alignItems: 'center',
-        marginBottom: 20,
     },
     previewContainer: {
         alignItems: 'center',

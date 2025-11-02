@@ -4,7 +4,7 @@ import { api } from '../../services/api';
 import type { BookFormData } from '../../types/book';
 import { BookImagePicker } from '@/components/image'; 
 import { useState } from 'react';
-import { useBooks } from '../../contexts/BooksContext';
+import { useBooks } from '../../app/contexts/BooksContext'
 import { RainbowBackground } from '@/components/rainbow-background';
 
 export default function NewBook() {
@@ -44,7 +44,6 @@ export default function NewBook() {
          <RainbowBackground>
         <ScrollView style={styles.container}>
             
-            <Text style={styles.label}>Nouveau Livre</Text>
                      <BookImagePicker
                     currentImage={formData.cover}
                     onImageSelected={(imageUri) => setFormData(prev => ({ ...prev, cover: imageUri }))}

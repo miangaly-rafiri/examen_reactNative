@@ -4,10 +4,11 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { api } from '../../services/api';
 import type { Book } from '../../types/book';
-import { useEffect, useState } from 'react';
-import { useBooks } from '../../contexts/BooksContext';
+import React, { useEffect, useState } from 'react';
+import { useBooks } from '../../app/contexts/BooksContext';
 import { RainbowBackground } from '../../components/rainbow-background';
 import { StarRating } from '@/components/star-rating';
+import { Ionicons } from '@expo/vector-icons';
 
 
 export default function HomeScreen() {
@@ -22,6 +23,7 @@ export default function HomeScreen() {
     const [sortBy, setSortBy] = useState<'name' | 'author' | 'year' | 'rating'>('name');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [bookImages, setBookImages] = useState<{[key: string]: string}>({});
+    const { isOnline, syncPending } = useBooks();
 
     useEffect(() => {
         refreshBooks();
@@ -109,7 +111,7 @@ export default function HomeScreen() {
     const renderItem = ({ item: book }: { item: Book }) => (
         <TouchableOpacity
             style={styles.bookItem}
-            onPress={() => router.push(`/book/${book.id}`)}
+            onPress={() => router.push(`/book/bookDetail?id=${book.id}`)}
         >
             <ThemedView style={styles.bookContent}>
                 <ThemedView style={styles.bookRow}>
@@ -130,7 +132,7 @@ export default function HomeScreen() {
                                         styles.favoriteIcon,
                                         book.favorite && styles.favoriteIconActive
                                     ]}>
-                                        {book.favorite ? '❤️' : '🤍'}
+                                        {book.favorite ? '❤️' : '🖤'}
                                     </ThemedText>
                                 </TouchableOpacity>
 
@@ -193,17 +195,48 @@ export default function HomeScreen() {
     return (
         <RainbowBackground>
             <ThemedView style={styles.header}>
-                <ThemedText style={styles.headerTitle}>Ma Bibliothèque</ThemedText>
+                <ThemedText style={styles.headerTitle}>Les livres</ThemedText>
                 <ThemedText style={styles.headerSubtitle}>{books.length} livre{books.length > 1 ? 's' : ''}</ThemedText>
+                 
+
+          <View style={styles.statusContainer}>
+            <Text style={[
+              styles.statusText,
+              isOnline ? styles.online : styles.offline
+            ]}>
+              {isOnline ? '✅ En ligne' : '🟡 Hors ligne'}
+            </Text>
+            {syncPending && (
+              <Text style={styles.syncText}>🔄 Sync en attente</Text>
+            )}
+          </View>
+
+    
+    <View style={styles.quickActions}>
+        <TouchableOpacity 
+            style={styles.quickButton}
+           onPress={() => router.push('/(tabs)/stats' as any)}
+        >
+            <Text style={styles.quickButtonEmoji}>📊</Text>
+            <Text style={styles.quickButtonText}>Stats</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+            style={styles.quickButton}
+            onPress={() => router.push('/(tabs)/settings' as any)}
+        >
+            <Text style={styles.quickButtonEmoji}>⚙️</Text>
+            <Text style={styles.quickButtonText}>Paramètres</Text>
+        </TouchableOpacity>
+    </View>
             </ThemedView>
-                
-            {/* Barre de recherche et filtres */}
+
             <ThemedView style={styles.searchContainer}>
                 <View style={styles.searchRow}>
                     <TextInput
                         style={styles.searchInput}
                         placeholder="Rechercher un livre ou auteur..."
-                        placeholderTextColor="#999"
+                        placeholderTextColor="#fffcfcff"
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                     />
@@ -215,7 +248,7 @@ export default function HomeScreen() {
                     </TouchableOpacity>
                 </View>
                 
-                {/* Indicateurs de filtres actifs */}
+                
                 <View style={styles.activeFilters}>
                     {filters.read !== undefined && (
                         <View style={styles.activeFilterTag}>
@@ -225,10 +258,11 @@ export default function HomeScreen() {
                         </View>
                     )}
                     {filters.favorite !== undefined && (
-                        <View style={styles.activeFilterTag}>
-                            <Text style={styles.activeFilterText}>❤️ Favoris</Text>
-                        </View>
-                    )}
+                    <View style={styles.activeFilterTag}>
+                        <Ionicons name="heart" size={16} color="#ff6b6b" />
+                        <Text style={styles.activeFilterText}> Favoris</Text>
+                    </View>
+                )}
                     <View style={styles.activeFilterTag}>
                         <Text style={styles.activeFilterText}>
                             {sortOrder === 'asc' ? '↑' : '↓'} {getSortLabel(sortBy)}
@@ -237,13 +271,12 @@ export default function HomeScreen() {
                 </View>
             </ThemedView>
             
-            {/* Liste des livres */}
+          
             <FlatList
                 data={filteredBooks}
                 renderItem={renderItem}
                 keyExtractor={(book) => book.id}
                 contentContainerStyle={styles.list}
-                // extraData={searchQuery + filters.read + filters.favorite + sortBy + sortOrder}
                  key={`book-list-${searchQuery}-${filters.read}-${filters.favorite}-${sortBy}-${sortOrder}`} 
                 ListEmptyComponent={() => (
                     <ThemedView style={styles.emptyContainer}>
@@ -257,7 +290,7 @@ export default function HomeScreen() {
                 )}
             />
             
-            {/* Bouton pour ajouter un livre */}
+       
             <TouchableOpacity 
                 style={styles.fab}
                 onPress={() => router.push('/book/new')}
@@ -265,7 +298,7 @@ export default function HomeScreen() {
                 <Text style={styles.fabText}>+</Text>
             </TouchableOpacity>
             
-            {/* Modal de filtres */}
+      
             <Modal
                 visible={showFilters}
                 transparent={true}
@@ -277,7 +310,7 @@ export default function HomeScreen() {
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Filtres et Tri</Text>
                         
-                        {/* Filtres */}
+                  
                         <Text style={styles.sectionTitle}>Filtres</Text>
                         
                         <View style={styles.filterGroup}>
@@ -410,10 +443,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FF6B6B',
-    },
     header: {
         backgroundColor: 'rgba(255, 255, 255, 0.2)', 
         padding: 20,
@@ -436,8 +465,8 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     headerSubtitle: {
-        fontSize: 16,
-        color: 'rgba(255, 255, 255, 0.8)',
+        fontSize: 18,
+        color: 'rgba(255, 255, 255, 1)',
     },
     centered: {
         flex: 1,
@@ -458,21 +487,19 @@ const styles = StyleSheet.create({
     list: {
         padding: 16,
     },
-    bookItem: {
-        marginBottom: 16,
-        borderRadius: 15,
-        backgroundColor: 'rgba(255, 255, 255, 0.85)', 
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-        elevation: 3,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.2)', 
-    },
+
+bookItem: {
+    marginBottom: 16,
+    borderRadius: 15,
+    backgroundColor: '#daf4dbff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 3,
+    borderWidth: 1,
+},
+
     bookContent: {
         padding: 16,
     },
@@ -483,19 +510,19 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     bookTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
         color: 'black', 
         flex: 1,
     },
     bookAuthor: {
-        fontSize: 16,
-        color: '#666',
+        fontSize: 18,
+        color: '#000',
         marginBottom: 8,
     },
     bookTheme: {
-        fontSize: 14,
-        color: '#888',
+        fontSize: 16,
+        color: '#000',
     },
     bookRow: {
         flexDirection: 'row',
@@ -530,10 +557,10 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
     readBadge: {
-        backgroundColor: '#96CEB4', 
+        backgroundColor: '#f47333ff', 
     },
     unreadBadge: {
-        backgroundColor: '#FF9999',
+        backgroundColor: '#0a0303ff',
     },
     badgeText: {
         color: 'white',
@@ -552,7 +579,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         shadowColor: '#000',
         borderWidth: 2,
-        borderColor: 'rgba(255, 255, 255, 0.3)',
+        borderColor: 'rgba(227, 162, 162, 0.3)',
         shadowOffset: {
             width: 0,
             height: 2,
@@ -588,7 +615,7 @@ const styles = StyleSheet.create({
     },
     ratingText: {
         fontSize: 14,
-        color: '#666',
+        color: '#451b1bff',
     },
     searchContainer: {
         padding: 16,
@@ -601,7 +628,7 @@ const styles = StyleSheet.create({
     },
     searchInput: {
         flex: 1,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: 'rgba(220, 186, 235, 0.9)',
         padding: 12,
         borderRadius: 8,
         fontSize: 16,
@@ -711,4 +738,60 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
+
+    statusContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+},
+statusText: {
+    fontSize: 14,
+    fontWeight: '600',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+},
+online: {
+    backgroundColor: 'rgba(76, 175, 80, 0.2)',
+    color: 'white',
+},
+offline: {
+    backgroundColor: 'rgba(255, 152, 0, 0.2)',
+    color: '#FF9800',
+},
+syncText: {
+    fontSize: 14,
+    color: '#2196F3',
+    fontWeight: '600',
+    backgroundColor: 'rgba(33, 150, 243, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+},
+
+quickActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+    justifyContent: 'center',
+},
+quickButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+},
+quickButtonEmoji: {
+    fontSize: 16,
+    marginRight: 6,
+},
+quickButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'white',
+},
 });

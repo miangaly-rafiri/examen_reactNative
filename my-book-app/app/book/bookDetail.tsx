@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { api } from '../../services/api';
 import { Book } from '../../types/book';
 import { useState, useCallback } from 'react';
-import { useBooks } from '../../contexts/BooksContext';
+import { useBooks } from '../contexts/BooksContext';
 import { RainbowBackground } from '../../components/rainbow-background';
 import { StarRating } from '@/components/star-rating';
 
@@ -138,7 +138,7 @@ const handleAddNote = async () => {
                 )}
 
                  {book.favorite && (
-                    <Text style={styles.info}> Favori : {book.favorite ? 'Oui' : 'Non'} </Text>
+                    <Text style={styles.info}>Favori : {book.favorite ? 'Oui' : 'Non'} </Text>
 
                 )}               
 
@@ -169,12 +169,9 @@ const handleAddNote = async () => {
 </Text>
                     </TouchableOpacity>
 
-            
-
-
                     <TouchableOpacity 
                         style={[styles.button, styles.editButton]}
-                        onPress={() => router.push(`/book/edit/${book.id}`)}
+                       onPress={() => router.push(`/book/edit/bookEdit?id=${book.id}`)}
                     >
                         <Text style={styles.buttonText}>Modifier</Text>
                     </TouchableOpacity>
@@ -207,13 +204,13 @@ const handleAddNote = async () => {
                     <TextInput
                       style={styles.noteInput}
                       placeholder="Ajouter une note..."
-                      placeholderTextColor="rgba(255,255,255,0.6)"
+                      placeholderTextColor="rgba(0, 0, 0, 1)"
                       value={newNote}
                       onChangeText={setNewNote}
                       multiline
                     />
                     <TouchableOpacity 
-                      style={[styles.button, styles.addNoteButton, !newNote.trim() && styles.buttonDisabled]}
+                      style={[styles.button,!newNote.trim() && styles.buttonDisabled]}
                       onPress={handleAddNote}
                       disabled={!newNote.trim()}
                     >
@@ -280,11 +277,13 @@ const styles = StyleSheet.create({
     },
     info: {
         fontSize: 16,
-        marginBottom: 8,
-        color: 'white',
+    marginBottom: 8,
+    color: 'white',
+    fontWeight: '500',
+    letterSpacing: 0.5,
     },
     favoriteButton: {
-    backgroundColor: 'pink', 
+    backgroundColor: '#daf4dbff',
 },
 
     header: {
@@ -315,16 +314,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     readButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#daf4dbff',
     },
     editButton: {
-        backgroundColor: '#2196F3',
+        backgroundColor: '#daf4dbff',
     },
     deleteButton: {
-        backgroundColor: '#F44336',
+        backgroundColor: '#daf4dbff',
     },
     buttonText: {
-        color: 'white',
+        color: 'black',
         fontSize: 16,
         fontWeight: '600',
     },
@@ -378,7 +377,7 @@ const styles = StyleSheet.create({
 
     // Ajouter les styles pr notes 
     section: {
-        backgroundColor: 'rgba(255, 255, 255, 0.12)',
+        backgroundColor: 'rgba(255, 255, 255, 0.98)',
         padding: 16,
         borderRadius: 8,
         marginTop: 24,
@@ -390,7 +389,7 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     noteCard: {
-        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        backgroundColor: 'rgba(85, 127, 50, 0.97)',
         padding: 12,
         borderRadius: 6,
         marginBottom: 8,
@@ -401,14 +400,14 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     noteDate: {
-        color: 'rgba(255, 255, 255, 0.7)',
+        color: 'rgba(255, 255, 255, 0.87)',
         fontSize: 12,
     },
     addNoteContainer: {
         marginTop: 16,
     },
     noteInput: {
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: 'rgba(178, 177, 177, 0.9)',
         padding: 12,
         borderRadius: 6,
         minHeight: 80,
@@ -416,15 +415,13 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         fontSize: 16,
     },
-    addNoteButton: {
-        backgroundColor: '#2196F3',
-    },
+  
     buttonDisabled: {
-        backgroundColor: '#CCCCCC',
+        backgroundColor: '#b86428ff',
         opacity: 0.6,
     },
     emptyText: {
-        color: 'rgba(255, 255, 255, 0.7)',
+        color: 'rgba(114, 25, 25, 0.7)',
         fontStyle: 'italic',
         textAlign: 'center',
         padding: 16,
