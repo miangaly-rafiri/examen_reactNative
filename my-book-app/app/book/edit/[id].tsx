@@ -1,4 +1,4 @@
-import { TextInput, StyleSheet, TouchableOpacity, Text, ScrollView, Switch} from 'react-native';
+import { TextInput, StyleSheet, TouchableOpacity, Text, ScrollView, Switch, View, Image} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { api } from '../../../services/api';
 import { BookFormData } from '../../../types/book';
@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import { useBooks } from '../../../contexts/BooksContext';
 import { RainbowBackground } from '@/components/rainbow-background';
 import { StarRating } from '@/components/star-rating';
+import { BookImagePicker } from '@/components/image';
+// import { imageCacheService } from '../../../services/imageCache';
 
 
 export default function EditBook() {
@@ -19,7 +21,8 @@ export default function EditBook() {
         read: false,
         favorite: false,
         year: 0,
-        rating: undefined
+        rating: undefined, 
+        cover: undefined
     });
 
     useEffect(() => {
@@ -30,6 +33,7 @@ export default function EditBook() {
 
     const loadBook = async (bookId: string) => {
         try {
+            // const localImage = await imageCacheService.getLocalImage(bookId);
             const book = await api.getBook(bookId);
             setFormData({
                 name: book.name,
@@ -39,16 +43,19 @@ export default function EditBook() {
                 read: book.read || false,
                 favorite: book.favorite || false,
                 year: book.year || 0,
-                rating: book.rating
+                rating: book.rating, 
+                //  cover: localImage || book.cover || undefined
+                cover: book.cover || undefined
+
             });
         } catch (error) {
             console.error('Erreur lors du chargement du livre:', error);
         }
     };
-
     const { refreshBooks } = useBooks();
 
     const handleSubmit = async () => {
+        
         if (typeof id === 'string') {
             try {
                 await api.updateBook(id, formData);
@@ -66,6 +73,42 @@ export default function EditBook() {
             <Text>
                 Modifer le livre
             </Text>
+
+           {/* AFFICHAGE DE L'IMAGE EXISTANTE */}
+                <View style={styles.coverContainer}>
+                    <Text style={styles.sectionLabel}>Image actuelle :</Text>
+                    {formData.cover ? (
+                        <Image 
+                            source={{ uri: formData.cover }} 
+                            style={styles.existingImage}
+                            resizeMode="cover"
+                        />
+                    ) : (
+                        <View style={styles.placeholder}>
+                            <Text style={styles.placeholderText}>📚</Text>
+                            <Text style={styles.placeholderSubtext}>Aucune image</Text>
+                        </View>
+                    )}
+                </View>
+
+              <BookImagePicker
+                currentImage={formData.cover}
+                onImageSelected={(imageUri) => setFormData(prev => ({ ...prev, cover: imageUri }))}
+            />
+
+                {/* AFFICHAGE DE L'URL POUR DEBUG */}
+                {formData.cover && (
+                    <View style={styles.urlContainer}>
+                        <Text style={styles.urlLabel}>URL de l'image :</Text>
+                        <Text style={styles.urlText} numberOfLines={2}>
+                            {formData.cover}
+                        </Text>
+                        <Text style={styles.urlType}>
+                            Type: {formData.cover.startsWith('http') ? 'URL distante' : 'URI locale'}
+                        </Text>
+                    </View>
+                )}
+
             <Text style={styles.label}>Titre</Text>
             <TextInput
                 style={styles.input}
@@ -144,11 +187,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
-    // label: {
-    //     fontSize: 16,
-    //     fontWeight: '600',
-    //     marginBottom: 8,
-    // },
     input: {
         backgroundColor: 'white',
         padding: 12,
@@ -174,4 +212,89 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         color: 'white',
     },
+    // url de l'image
+        urlContainer: {
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 16,
+    },
+    urlLabel: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: 'white',
+        marginBottom: 4,
+    },
+    urlText: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.8)',
+        fontFamily: 'monospace',
+    },
+    urlType: {
+        fontSize: 11,
+        color: 'rgba(255, 255, 255, 0.6)',
+        marginTop: 4,
+        fontStyle: 'italic',
+    },
+    noImageText: {
+        fontSize: 14,
+        color: 'rgba(255, 255, 255, 0.6)',
+        textAlign: 'center',
+        marginBottom: 16,
+    },
+
+    // images 
+    sectionLabel: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: 'white',
+        marginBottom: 10,
+    },
+    coverContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    existingImage: {
+        width: 150,
+        height: 200,
+        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    pickerContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    previewContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    previewImage: {
+        width: 120,
+        height: 160,
+        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: '#4CAF50',
+    },
+    placeholder: {
+        width: 150,
+        height: 200,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: 'rgba(255, 255, 255, 0.2)',
+        borderStyle: 'dashed',
+    },
+    placeholderText: {
+        fontSize: 32,
+        marginBottom: 8,
+    },
+    placeholderSubtext: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.7)',
+        textAlign: 'center',
+    },
+
 });

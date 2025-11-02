@@ -5,8 +5,6 @@ const API_URL = 'http://localhost:3000';
 // const API_URL = 'http://192.168.1.69:3000';
 
 
-
-
 export const api = {
     // Récupérer 
     async getBooks(): Promise<Book[]> {
@@ -14,6 +12,35 @@ export const api = {
         if (!response.ok) throw new Error('Erreur lors de la récupération des livres');
         return response.json();
     },
+
+
+  // Méthode pour uploader une image
+    async uploadImage(imageUri: string): Promise<string> {
+        const formData = new FormData();
+        const file = {
+            uri: imageUri,
+            type: 'image/jpeg',
+            name: 'cover.jpg',
+        } as any;
+        
+        formData.append('image', file);
+
+        const response = await fetch(`${API_URL}/upload`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de l\'upload de l\'image');
+        }
+
+        const data = await response.json();
+        return data.url;
+    },
+
 
     // Récupérer par son ID
     async getBook(id: string): Promise<Book> {
@@ -35,8 +62,24 @@ export const api = {
         return response.json();
     },
 
-    // Mettre à jour 
+    // // Mettre à jour 
     async updateBook(id: string, book: Partial<Book>): Promise<Book> {
+            let coverUrl = book.cover;
+
+    // SI c'est une URI locale (blob ou file) → UPLOAD OBLIGATOIRE
+    if (book.cover && (book.cover.startsWith('blob:') || book.cover.startsWith('file:'))) {
+        try {
+            coverUrl = await this.uploadImage(book.cover);
+        } catch (error) {
+            coverUrl = book.cover;
+        }
+    } else if (book.cover && book.cover.startsWith('http')) {
+    }
+
+    const bookData = {
+        ...book,
+        cover: coverUrl
+    };
         const response = await fetch(`${API_URL}/books/${id}`, {
             method: 'PUT',
             headers: {
@@ -55,6 +98,7 @@ export const api = {
         });
         if (!response.ok) throw new Error('Erreur lors de la suppression du livre');
     },
+
 // Ajouter une note à un livre
 async addBookNote(bookId: string, content: string): Promise<any> {
   const response = await fetch(`${API_URL}/books/${bookId}/notes`, {
@@ -70,7 +114,7 @@ async addBookNote(bookId: string, content: string): Promise<any> {
 
 // Mettre à jour les favoris
 async toggleFavoriteStatus(id: string, favorite: boolean): Promise<Book> {
-  return this.updateBook(id, { favorite });
+  return this.updateBook(id, { favorite })
 },
 
 

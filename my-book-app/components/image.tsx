@@ -32,14 +32,9 @@ export function BookImagePicker({ currentImage, onImageSelected }: ImagePickerPr
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
-        {image ? (
-          <Image source={{ uri: image }} style={styles.image} />
-        ) : (
           <View style={styles.placeholder}>
-            <ThemedText style={styles.placeholderEmoji}>📷</ThemedText>
-            <ThemedText style={styles.placeholderText}>Ajouter une couverture</ThemedText>
+            <ThemedText style={styles.placeholderText}>Chager la photo</ThemedText>
           </View>
-        )}
       </TouchableOpacity>
     </View>
   );
